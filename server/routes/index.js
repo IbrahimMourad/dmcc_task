@@ -1,43 +1,31 @@
-const { json } = require('express');
 const express = require('express');
-const db = require('../db');
+const db_api = require('../db/index.js');
+const seedDB = require('../db/seedDB');
 
 const router = express.Router();
 
-// router.get('/', async (req, res) => {
-//   try {
-//     let results = await db.all();
-//     res.json(results);
-//   } catch (err) {
-//     console.log(err);
-//     res.sendStatus(500);
-//   }
-// });
-
-// router.get('/:id', async (req, res) => {
-//   try {
-//     let results = await db.one(req.params.id);
-//     res.json(results);
-//   } catch (err) {
-//     console.log(err);
-//     res.sendStatus(500);
-//   }
-// });
-
 router.get('/tables_seed', async (req, res) => {
   try {
-    // // Create Tables
-    // await db.createTableUser();
-    // await db.createTableCategory();
-    // await db.createTableCourse();
-    // await db.createTableUserLogs();
-    // await db.createTableUserEnrolment();
-    // await db.createTableTag();
-    // await db.createTableCourseTags();
-    await db.test();
+    // ******  Create Tables ********
+    await seedDB.createTableUser();
+    await seedDB.createTableCategory();
+    await seedDB.createTableCourse();
+    await seedDB.createTableUserLogs();
+    await seedDB.createTableUserEnrolment();
+    await seedDB.createTableTag();
+    await seedDB.createTableCourseTags();
+    // // insert data into DataBase
+    await seedDB.userSeed();
+    await seedDB.categorySeed();
+    await seedDB.userLogsSeed();
+    await seedDB.tagSeed();
+    await seedDB.courseSeed();
+    await seedDB.courseTagsSeed();
+    await seedDB.userEnrolment();
+    await seedDB.createViewForTags();
 
     console.log('Tables created');
-    res.status(201).json({ message: `table created` });
+    res.status(201).json({ message: `tables created and seeded` });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -49,8 +37,8 @@ router.get(
   async (req, res) => {
     try {
       const { start, end, name } = req.params;
-      let results = await db.getLoginsDate(start, end, name);
-      res.json(results);
+      let results = await db_api.getLoginsDate(start, end, name);
+      res.status(200).json(results);
     } catch (err) {
       console.log(err);
       res.sendStatus(500);
@@ -59,9 +47,9 @@ router.get(
 );
 
 router.get('/most_active_user', async (req, res) => {
-  // most three active users
+  // Get most active users
   try {
-    let results = await db.getMostActiveUser();
+    let results = await db_api.getMostActiveUser();
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -70,9 +58,9 @@ router.get('/most_active_user', async (req, res) => {
 });
 
 router.get('/most_enrolled_categores', async (req, res) => {
-  // most three active users
+  // Get most enrolled categories
   try {
-    let results = await db.getMostEnrolledCategories();
+    let results = await db_api.getMostEnrolledCategories();
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -80,13 +68,16 @@ router.get('/most_enrolled_categores', async (req, res) => {
   }
 });
 router.get('/get_course_by_tag/:tag', async (req, res) => {
-  // most three active users
+  // Get course by tag name
 
   try {
     const { tag } = req.params;
-    let results = await db.getCourseByTag();
-
+    let results = await db_api.getCourseByTag();
     let courseList = [];
+
+    /*
+      handle the tags comming from database loop
+    */
     for (const course of results) {
       if (course.course_tags_array.toLowerCase().includes(tag.toLowerCase())) {
         courseList.push({
@@ -97,18 +88,6 @@ router.get('/get_course_by_tag/:tag', async (req, res) => {
     }
 
     res.status(200).json(courseList);
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
-router.get('/test', async (req, res) => {
-  // most three active users
-
-  try {
-    let results = await db.test();
-
-    res.status(200).json(results);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
