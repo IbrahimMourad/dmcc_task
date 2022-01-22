@@ -1,11 +1,11 @@
 const mysql = require('mysql');
 const pool = mysql.createPool({
   connectionLimit: 10,
-  password: '1234',
-  user: 'root',
-  database: 'reportingapidb',
-  host: 'localhost',
-  port: '3306',
+  password: process.env.password,
+  user: process.env.user,
+  database: process.env.database,
+  host: process.env.host,
+  port: process.env.DBport,
 });
 
 const getCourseByTag = () => {

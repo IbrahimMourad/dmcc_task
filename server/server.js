@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
-var morgan = require('morgan');
+const morgan = require('morgan');
 
 const apiRouter = require('./routes');
 const middlewares = require('./middleware');
+const PORT = 3000;
 const app = express();
 
 // middlewares
@@ -13,6 +15,6 @@ app.use('/api', apiRouter);
 
 // DB CONNECT
 
-app.listen(process.env.PORT || '3000', () => {
-  console.log(`Server is running on Port: ${process.env.PORT || '3000'}`);
+app.listen(process.env.PORT || PORT, () => {
+  console.log(`Server is running on Port: ${process.env.PORT || PORT}`);
 });

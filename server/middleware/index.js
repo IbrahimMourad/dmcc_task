@@ -1,4 +1,4 @@
-var myLogger = function (tokens, req, res) {
+const myLogger = function (tokens, req, res) {
   return [
     '\n************\n',
     `Request Method: ${tokens.method(req, res)} \n`,
